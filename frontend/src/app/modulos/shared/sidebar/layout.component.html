@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar</title>
+</head>
+<body>
+    <div class="wrapper">
+        <aside id="sidebar">
+            <div class="d-flex">
+                <button id="toggle-btn" type="button">
+                    <i class="fa-solid fa-money-bill-wheat"></i>
+                </button>
+                <div class="sidebar-logo">
+                    <a >Sistema Facturacion</a>
+                    <small class="text-white ms-2 d-block mt-2">{{ nombreUsuario }}</small>
+                    <div style="height: 1px; background-color: white; margin-top: 5px; margin-bottom: 5px;"></div>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a routerLink="/panel/dashboard" class="sidebar-link">
+                        <i class="fa-solid fa-house"></i>                        
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a routerLink="/panel/usuarios" class="sidebar-link">
+                        <i class="fa-solid fa-users"></i>                      
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a routerLink="/panel/clientes" class="sidebar-link">
+                        <i class="fa-solid fa-house-chimney-user"></i>
+                        <span>Clientes</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a routerLink="/panel/facturacion" class="sidebar-link">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Facturacion</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a style="cursor: pointer;" class="sidebar-link" (click)="cerrarSesion()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Cerrar Sesion</span>
+                </a>
+            </div>
+        </aside>
+        <div class="main p-3">
+            <div class="text-center">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

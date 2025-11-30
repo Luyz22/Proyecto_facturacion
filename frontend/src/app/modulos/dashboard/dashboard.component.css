@@ -1,0 +1,52 @@
+/* Dashboard custom styles */
+.card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #212529;
+  margin: 0;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+}
+
+.display-6 {
+  font-weight: 700;
+  color: inherit;
+}
+
+small.text-success-light,
+small.text-danger-light,
+small.text-primary-light,
+small.text-warning-light,
+small.text-info-light,
+small.text-secondary-light {
+  opacity: 0.8;
+  font-size: 0.85rem;
+}
+
+.alert-info {
+  background-color: #e7f3ff;
+  border-color: #b3d9ff;
+  color: #004085;
+}

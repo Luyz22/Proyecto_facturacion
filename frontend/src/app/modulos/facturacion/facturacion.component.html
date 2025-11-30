@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Facturación</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-file-invoice"></i> Gestion de Facturación
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-main container">
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="number">{{ estadisticas.total_facturas || 0 }}</div>
+                    <div class="label">Total de Facturas</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="number">{{ estadisticas.facturas_pagadas || 0 }}</div>
+                    <div class="label">Pagadas</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="number">{{ estadisticas.facturas_pendientes || 0 }}</div>
+                    <div class="label">Pendientes</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="number">$ {{ estadisticas.monto_total | number:'1.0-2' }}</div>
+                    <div class="label">Monto Total</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0">
+                <i class="fas fa-list"></i> Listado de Facturas
+            </h2>
+            <button class="btn btn-primary-custom btn-lg" data-bs-toggle="modal" data-bs-target="#facturModal">
+                <i class="fas fa-plus"></i> Nueva Factura
+            </button>
+        </div>
+
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table" id="facturasTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-barcode"></i> Número</th>
+                            <th><i class="fas fa-user"></i> Cliente</th>
+                            <th><i class="fas fa-calendar"></i> Fecha</th>
+                            <th><i class="fas fa-money-bill-wave"></i> Monto</th>
+                            <th><i class="fas fa-info-circle"></i> Estado</th>
+                            <th><i class="fas fa-cogs"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="listadoFacturas.length === 0" class="table-empty">
+                            <td colspan="6">
+                                <div>
+                                    <i class="fas fa-inbox"></i>
+                                    <p>No hay facturas registradas</p>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr *ngFor="let f of listadoFacturas">
+                            <td>{{ f.numero_factura }}</td>
+                            <td>{{ f.cliente }}</td>
+                            <td>{{ f.fecha }}</td>
+                            <td>$ {{ f.total | number:'1.0-2' }}</td>
+                            <td>
+                                <span 
+                                    class="badge"
+                                    [ngClass]="{
+                                        'bg-warning text-dark': f.estado === 'PENDIENTE',
+                                        'bg-success': f.estado === 'PAGADA',
+                                        'bg-danger': f.estado === 'ANULADA'
+                                    }"
+                                >
+                                    {{ f.estado }}
+                                </span>
+                            </td>
+                            <td>
+                                <button *ngIf="f.estado === 'PENDIENTE'"
+                                        class="btn btn-sm btn-success me-2"
+                                        (click)="marcarPagada(f.id_factura)">
+                                    <i class="fas fa-check"></i>
+                                </button>
+
+                                <button class="btn btn-sm btn-danger" (click)="eliminarFactura(f.id_factura)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="total-section">
+                <div class="label">Total General:</div>
+                <div class="amount">
+                    $ {{ estadisticas.monto_total | number:'1.0-2' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="facturModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                <h5 class="modal-title">Nueva Factura</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                    <label class="form-label">Número de Factura</label>
+                    <input type="text" class="form-control" [(ngModel)]="factura.numero" name="numero">
+                    </div>
+
+                    <div class="mb-3">
+                    <label class="form-label">Cliente</label>
+                    <select class="form-control" [(ngModel)]="factura.id_cliente" name="id_cliente">
+                        <option value="" disabled selected>Seleccione un cliente</option>
+                        <option *ngFor="let c of clientes" [value]="c.id_cliente">
+                        {{ c.nombres }} {{ c.apellidos }} ({{ c.numero_documento }})
+                        </option>
+                    </select>
+                    </div>
+
+                    <div class="mb-3">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" class="form-control" [(ngModel)]="factura.fecha" name="fecha">
+                    </div>
+
+                    <div class="mb-3">
+                    <label class="form-label">Monto Total</label>
+                    <input type="number" class="form-control" step="0.01" [(ngModel)]="factura.total" name="total">
+                    </div>
+
+                    <div class="mb-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-control" [(ngModel)]="factura.estado" name="estado">
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="PAGADA">Pagada</option>
+                        <option value="ANULADA">Anulada</option>
+                    </select>
+                    </div>
+                </form>
+                </div>
+
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary-custom" (click)="guardarFactura()">Guardar Factura</button>
+                </div>
+
+            </div>
+        </div>
+    </div>

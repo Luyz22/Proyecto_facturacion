@@ -1,0 +1,291 @@
+<!-- usuarios.component.html - Versión mejorada -->
+
+<div class="usuarios-container">
+  <!-- <CHANGE> Header mejorado con título y descripción -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="header-title">Módulo de Usuarios</h1>
+      <p class="header-subtitle">Gestiona y administra todos los usuarios del sistema</p>
+    </div>
+    <button type="button" class="btn-create-primary" (click)="abrirModalCrear()">
+      <i class="fas fa-plus"></i> Crear Usuario
+    </button>
+  </div>
+
+  <!-- <CHANGE> Sección de filtros rediseñada con mejor disposición -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label class="filter-label">Buscar Usuario</label>
+      <div class="input-wrapper">
+        <i class="fas fa-search filter-icon"></i>
+        <input 
+          type="text" 
+          class="filter-input" 
+          placeholder="Buscar por nombre o email..." 
+          [(ngModel)]="terminoBusqueda" 
+        />
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Estado</label>
+      <div class="input-wrapper">
+        <i class="fas fa-toggle-on filter-icon"></i>
+        <select class="filter-select" [(ngModel)]="filtroEstado">
+          <option value="">Todos los estados</option>
+          <option [value]="1">Activo</option>
+          <option [value]="0">Inactivo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Rol</label>
+      <div class="input-wrapper">
+        <i class="fas fa-user-shield filter-icon"></i>
+        <select class="filter-select" [(ngModel)]="filtroRol">
+          <option value="">Todos los roles</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Usuario">Usuario</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- <CHANGE> Tabla rediseñada con estilos modernos -->
+  <div class="table-section">
+    <div class="table-responsive" *ngIf="usuariosFiltrados.length > 0; else sinDatos">
+      <table class="users-table">
+        <thead class="table-header">
+          <tr>
+            <th class="col-index">#</th>
+            <th class="col-nombre">Nombre</th>
+            <th class="col-email">Email</th>
+            <th class="col-rol">Rol</th>
+            <th class="col-estado">Estado</th>
+            <th class="col-fecha">Fecha Creación</th>
+            <th class="col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table-row" *ngFor="let u of usuariosFiltrados; let i = index">
+            <td class="col-index"><span class="row-number">{{ i + 1 }}</span></td>
+            <td class="col-nombre">
+              <div class="user-info">
+                <span class="user-avatar">{{ u.nombre_usuario.charAt(0).toUpperCase() }}</span>
+                <span class="user-name">{{ u.nombre_usuario }}</span>
+              </div>
+            </td>
+            <td class="col-email">{{ u.email }}</td>
+            <td class="col-rol">
+              <span class="role-badge" [ngClass]="u.rol === 'Administrador' ? 'role-admin' : 'role-user'">
+                {{ u.rol }}
+              </span>
+            </td>
+            <td class="col-estado">
+              <span class="status-badge" [ngClass]="u.estado === 1 ? 'status-active' : 'status-inactive'">
+                {{ u.estado === 1 ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="col-fecha">{{ u.creado_en }}</td>
+            <td class="col-acciones">
+              <div class="actions-group">
+                <button class="action-btn view-btn" (click)="detallesUsuario(u.id_usuario)" title="Ver detalles">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button 
+                  class="action-btn delete-btn" 
+                  (click)="inactivarUsuario(u.id_usuario, u.estado)"
+                  [title]="u.estado === 1 ? 'Desactivar usuario' : 'Reactivar usuario'"
+                >
+                  <i class="fa-solid" [ngClass]="u.estado === 1 ? 'fa-trash-can' : 'fa-rotate-left'"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <ng-template #sinDatos>
+    <div class="empty-state">
+      <i class="fas fa-inbox empty-icon"></i>
+      <h3 class="empty-title">No hay usuarios registrados</h3>
+      <p class="empty-text">Crea tu primer usuario para comenzar</p>
+      <button type="button" class="btn-create-primary" (click)="abrirModalCrear()">
+        <i class="fas fa-plus"></i> Crear Usuario
+      </button>
+    </div>
+  </ng-template>
+</div>
+
+<div class="modal fade" id="detallesUsuario" tabindex="-1" aria-labelledby="detallesUsuarioLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modal-content-custom">
+      <div class="modal-header modal-header-custom">
+        <h1 class="modal-title" id="detallesUsuarioLabel">
+          <i class="fas fa-user-circle"></i> Detalles del Usuario
+        </h1>
+        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close" (click)="editar = false">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-user-tie"></i> {{ editar ? 'Editar Nombre' : 'Nombre' }}</label>
+              <div class="input-wrapper">
+                <input 
+                  [disabled]="!editar" 
+                  name="nombre" 
+                  [(ngModel)]="usuarioSeleccionado.nombre_usuario" 
+                  type="text" 
+                  class="form-input"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-at"></i> {{ editar ? 'Editar Correo' : 'Correo' }}</label>
+              <div class="input-wrapper">
+                <input 
+                  [disabled]="!editar" 
+                  name="correo" 
+                  [(ngModel)]="usuarioSeleccionado.email" 
+                  type="text" 
+                  class="form-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-user-shield"></i> {{ editar ? 'Editar Rol' : 'Rol' }}</label>
+              <div class="input-wrapper">
+                <select [disabled]="!editar" class="form-select" [(ngModel)]="usuarioSeleccionado.rol" name="rol">
+                  <option value="1">Administrador</option>
+                  <option value="2">Usuario</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-calendar-days"></i> Fecha de Creación</label>
+              <div class="input-wrapper">
+                <input 
+                  name="fechaC" 
+                  [(ngModel)]="usuarioSeleccionado.creado_en" 
+                  disabled 
+                  type="text" 
+                  class="form-input"
+                />
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer modal-footer-custom">
+        <button 
+          type="button" 
+          class="btn-modal" 
+          (click)="editar = !editar"
+          [ngClass]="{ 'btn-edit': !editar, 'btn-cancel': editar }"
+        >
+          <i class="fas" [ngClass]="editar ? 'fa-times' : 'fa-edit'"></i>
+          {{ editar ? 'Cancelar' : 'Editar' }}
+        </button>
+        <button *ngIf="editar" type="button" class="btn-modal btn-save" (click)="guardarCambios(usuarioSeleccionado.id_usuario)">
+          <i class="fas fa-check"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="crearUsuario" tabindex="-1" aria-labelledby="crearUsuarioLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modal-content-custom">
+      <div class="modal-header modal-header-custom">
+        <h1 class="modal-title" id="crearUsuarioLabel">
+          <i class="fas fa-user-plus"></i> Crear Nuevo Usuario
+        </h1>
+        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close" (click)="limpiarCamposCrear()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-user-tie"></i> Nombre</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  id="nombre_crear" 
+                  name="nombre_crear" 
+                  [(ngModel)]="crearUsuario.nombre_usuario" 
+                  class="form-input"
+                  placeholder="Nombre completo del usuario"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-at"></i> Correo</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  id="correo_crear" 
+                  name="correo_crear" 
+                  [(ngModel)]="crearUsuario.correo" 
+                  class="form-input"
+                  placeholder="correo@ejemplo.com"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-user-shield"></i> Rol</label>
+              <div class="input-wrapper">
+                <select class="form-select" name="rol_crear" [(ngModel)]="crearUsuario.rol">
+                  <option value="" disabled selected>Seleccione el rol</option>
+                  <option value="1">Administrador</option>
+                  <option value="2">Usuario</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label"><i class="fas fa-lock"></i> Contraseña</label>
+              <div class="input-wrapper">
+                <input 
+                  type="password" 
+                  id="password_crear" 
+                  name="password_crear" 
+                  [(ngModel)]="crearUsuario.password" 
+                  class="form-input"
+                  placeholder="Ingrese una contraseña segura"
+                />
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer modal-footer-custom">
+        <button type="button" class="btn-modal btn-cancel" data-bs-dismiss="modal" (click)="limpiarCamposCrear()">
+          <i class="fas fa-times"></i> Cerrar
+        </button>
+        <button type="button" class="btn-modal btn-save" (click)="crearUser()">
+          <i class="fas fa-check"></i> Crear Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

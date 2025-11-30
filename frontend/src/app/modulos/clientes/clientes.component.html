@@ -1,0 +1,329 @@
+<div class="container-fluid py-4">
+  <div class="modulo-header">
+    <h2>
+      <i class="fas fa-users"></i>
+      Gestión de Clientes
+    </h2>
+  </div>
+
+  <div class="filtros-section">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <label class="form-label">
+          <i class="fas fa-search" style="color: var(--color-primary);"></i>
+          Buscar Cliente
+        </label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-magnifying-glass"></i></span>
+          <input type="text" class="form-control" placeholder="Nombre, email..." [(ngModel)]="terminoBusqueda" />
+        </div>
+      </div>
+
+      <!-- <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <label class="form-label">
+          <i class="fas fa-toggle-on" style="color: var(--color-primary);"></i>
+          Estado
+        </label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-circle-check"></i></span>
+          <select class="form-select" [(ngModel)]="filtroEstado">
+            <option value="">Todos los estados</option>
+            <option [value]="1">Activo</option>
+            <option [value]="0">Inactivo</option>
+          </select>
+        </div>
+      </div> -->
+
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6">
+        <label class="form-label">
+          <i class="fas fa-tag" style="color: var(--color-primary);"></i>
+          Tipo de documento
+        </label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
+          <select class="form-select" [(ngModel)]="filtroCategoria">
+            <option value="">Todos los documentos</option>
+            <option value="CC">Cédula de ciudadanía</option>
+            <option value="CE">Cédula de extranjería</option>
+            <option value="NIT">NIT</option>
+            <option value="PAS">Pasaporte</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <button type="button" class="btn btn-primary-custom w-100" (click)="abrirModalCrear()">
+          <i class="fas fa-plus"></i> Nuevo Cliente
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive" *ngIf="clientesFiltrados.length > 0; else sinDatos">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th><i class="fas fa-id-card"></i><small> Documento</small></th>
+          <th><i class="fas fa-user"></i><small> Nombre</small></th>
+          <th><i class="fas fa-envelope"></i><small> Email</small></th>
+          <th><i class="fas fa-location-dot"></i><small> Direccion</small></th>
+          <th><i class="fas fa-phone"></i><small> Telefono</small></th>
+          <th><i class="fas fa-circle-check"></i><small> Estado</small></th>
+          <th><i class="fas fa-calendar"></i><small> Fecha</small></th>
+          <th colspan="2"><small>Acciones</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of clientesFiltrados; let i = index">
+          <td><strong><small>{{ i + 1 }}</small></strong></td>
+          <td><small>{{cliente.tipo_documento}} {{ cliente.numero_documento }}</small></td>
+          <td><small>{{ cliente.nombres }} - {{ cliente.apellidos}}</small></td>
+          <td><small>{{ cliente.email }}</small></td>
+          <td><small>{{ cliente.direccion }}</small></td>
+          <td><small>{{ cliente.telefono || 'N/A' }}</small></td>
+          <td>
+            <span [ngClass]="cliente.estado === 1 ? 'badge-activo' : 'badge-inactivo'">
+              <small></small>{{ cliente.estado === 1 ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td><small>{{ cliente.fecha_creacion }}</small></td>
+          <td>
+            <a class="icon-button icon-view" (click)="detallesCliente(cliente.id_cliente)" title="Ver detalles">
+              <i class="fas fa-eye"></i>
+            </a>
+          </td>
+          <td>
+            <a class="icon-button icon-delete" (click)="eliminarCliente(cliente.id_cliente, cliente.estado)" title="Eliminar">
+              <i class="fas fa-trash-can"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #sinDatos>
+    <div class="alert alert-no-datos text-center py-4">
+      <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 1rem;"></i>
+      <strong>No hay clientes registrados.</strong>
+      <p class="mb-0 mt-2">Haz clic en "Nuevo Cliente" para comenzar.</p>
+    </div>
+  </ng-template>
+</div>
+
+<div class="modal fade" id="detallesCliente" tabindex="-1" aria-labelledby="detallesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title" id="detallesLabel">
+          <i class="fas fa-user-circle"></i> Detalles del Cliente
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="editar = false"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-id-card"></i> Tipo de Documento</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                <select [disabled]="!editar" [(ngModel)]="clienteSeleccionado.tipo_documento" name="tipo_documento" class="form-select">
+                  <option value="CC">Cédula de Ciudadanía</option>
+                  <option value="CE">Cédula de Extranjería</option>
+                  <option value="NIT">NIT</option>
+                  <option value="PAS">Pasaporte</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-hashtag"></i> Número de Documento</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                <input [disabled]="!editar" type="text" class="form-control"
+                  [(ngModel)]="clienteSeleccionado.numero_documento" name="numero_documento">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-user"></i> Nombres</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-pen"></i></span>
+                <input [disabled]="!editar" name="nombres" [(ngModel)]="clienteSeleccionado.nombres"
+                  type="text" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-user"></i> Apellidos</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-pen"></i></span>
+                <input [disabled]="!editar" name="apellidos" [(ngModel)]="clienteSeleccionado.apellidos"
+                  type="text" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-at"></i></span>
+                <input [disabled]="!editar" name="email" [(ngModel)]="clienteSeleccionado.email"
+                  type="email" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-phone"></i> Teléfono</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-phone-flip"></i></span>
+                <input [disabled]="!editar" name="telefono" [(ngModel)]="clienteSeleccionado.telefono"
+                  type="text" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label"><i class="fas fa-location-dot"></i> Dirección</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                <input [disabled]="!editar" name="direccion" [(ngModel)]="clienteSeleccionado.direccion"
+                  type="text" class="form-control" />
+              </div>
+            </div>
+
+            <!-- <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-circle-check"></i> Estado</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-toggle-on"></i></span>
+                <select [disabled]="!editar" name="estado" class="form-select"
+                  [(ngModel)]="clienteSeleccionado.estado">
+                  <option [value]="1">Activo</option>
+                  <option [value]="0">Inactivo</option>
+                </select>
+              </div>
+            </div> -->
+
+            <div class="col-12 col-md-12">
+              <label class="form-label"><i class="fas fa-calendar"></i> Fecha de Registro</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-calendar-days"></i></span>
+                <input disabled type="text" class="form-control"
+                  [(ngModel)]="clienteSeleccionado.fecha_creacion" name="fecha_creacion" />
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button" class="btn" [ngClass]="editar ? 'btn-danger' : 'btn-primary-custom'"
+          (click)="editar = !editar">
+          <i [class]="editar ? 'fas fa-times' : 'fas fa-edit'"></i>
+          {{ editar ? 'Cancelar' : 'Editar' }}
+        </button>
+
+        <button *ngIf="editar" type="button" class="btn btn-accent"
+          (click)="guardarCambios(clienteSeleccionado.id_cliente)">
+          <i class="fas fa-check"></i> Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="crearCliente" tabindex="-1" aria-labelledby="crearLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title" id="crearLabel">
+          <i class="fas fa-user-plus"></i> Registrar Nuevo Cliente
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="limpiarCamposCrear()"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-id-card"></i> Tipo de Documento</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                <select class="form-select" [(ngModel)]="crearCliente.tipo_documento" name="tipo_documento_crear">
+                  <option value="" selected disabled>Seleccione...</option>
+                  <option value="CC">CC</option>
+                  <option value="CE">CE</option>
+                  <option value="NIT">NIT</option>
+                  <option value="PAS">PAS</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-hashtag"></i> Número de Documento</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                <input type="text" class="form-control" [(ngModel)]="crearCliente.numero_documento" name="numero_documento_crear" placeholder="Ej: 1020456789">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-user"></i> Nombres</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" [(ngModel)]="crearCliente.nombres" name="nombres_crear" placeholder="Ej: Juan Carlos">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-user"></i> Apellidos</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" [(ngModel)]="crearCliente.apellidos" name="apellidos_crear" placeholder="Ej: Pérez Gómez">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-at"></i></span>
+                <input type="email" class="form-control" [(ngModel)]="crearCliente.email" name="email_crear" placeholder="ejemplo@correo.com">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label"><i class="fas fa-phone"></i> Teléfono</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                <input type="text" class="form-control" [(ngModel)]="crearCliente.telefono" name="telefono_crear" placeholder="3001234567">
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label"><i class="fas fa-map-marker-alt"></i> Dirección</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                <input type="text" class="form-control" [(ngModel)]="crearCliente.direccion" name="direccion_crear" placeholder="Ej: Calle 10 # 20-30">
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="limpiarCamposCrear()">
+          <i class="fas fa-times"></i> Cerrar
+        </button>
+
+        <button type="button" class="btn btn-primary-custom" (click)="crearClienteNuevo()">
+          <i class="fas fa-check"></i> Crear Cliente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

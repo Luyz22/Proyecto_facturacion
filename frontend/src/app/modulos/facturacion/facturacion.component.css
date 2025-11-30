@@ -1,0 +1,292 @@
+body {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Header */
+.navbar {
+    background-color: #305112 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    /* color: #dddd3b !important; */
+}
+
+.navbar .fa-file-invoice {
+    margin-right: 8px;
+    /* color: #dddd3b; */
+}
+
+/* Main Container */
+.container-main {
+    padding: 30px 0;
+}
+
+.section-title {
+    color: #305112;
+    font-weight: bold;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #dddd3b;
+}
+
+/* Buttons */
+.btn-primary-custom {
+    background-color: #305112;
+    border-color: #305112;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: #1a2d0a;
+    border-color: #1a2d0a;
+    color: #dddd3b;
+}
+
+.btn-accent {
+    background-color: #dddd3b;
+    border-color: #dddd3b;
+    color: #305112;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+    background-color: #c1c820;
+    border-color: #c1c820;
+    color: #305112;
+}
+
+.btn-action {
+    padding: 6px 10px;
+    font-size: 0.875rem;
+    margin: 0 3px;
+}
+
+/* Table Styles */
+.table-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #305112;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 12px;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(48, 81, 18, 0.05);
+}
+
+.table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table-empty {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.table-empty .fa {
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+/* Modal Styles */
+.modal-header {
+    background-color: #305112;
+    color: white;
+    border: none;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-title {
+    font-weight: bold;
+}
+
+.form-label {
+    color: #305112;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.form-control:focus {
+    border-color: #dddd3b;
+    box-shadow: 0 0 0 0.2rem rgba(221, 221, 59, 0.25);
+}
+
+.form-control {
+    border: 1px solid #ddd;
+}
+
+/* Badge */
+.badge-custom {
+    background-color: #dddd3b;
+    color: #305112;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+/* Status styles */
+.status-pagado {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-cancelado {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Alert */
+.alert-custom {
+    border: none;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.alert-success-custom {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger-custom {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+/* Total Section */
+.total-section {
+    background-color: #305112;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: right;
+}
+
+.total-section .label {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.total-section .amount {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #dddd3b;
+}
+
+/* Stats Cards */
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    border-top: 4px solid #305112;
+}
+
+.stat-card .icon {
+    font-size: 2.5rem;
+    color: #dddd3b;
+    margin-bottom: 10px;
+}
+
+.stat-card .number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #305112;
+}
+
+.stat-card .label {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Actions Column */
+.actions-cell {
+    white-space: nowrap;
+}
+
+.btn-edit {
+    background-color: #dddd3b;
+    color: #305112;
+    border: none;
+}
+
+.btn-edit:hover {
+    background-color: #c1c820;
+    color: #305112;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+.btn-view {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+}
+
+.btn-view:hover {
+    background-color: #138496;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table-responsive-custom {
+        font-size: 0.85rem;
+    }
+
+    .btn-action {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    .stat-card {
+        margin-bottom: 15px;
+    }
+}
